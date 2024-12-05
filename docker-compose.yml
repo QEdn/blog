@@ -8,8 +8,8 @@ services:
     volumes:
       - .:/app:z
       - static_volume:/app/staticfiles
-    ports:
-      - "8000:8000"
+    #    ports:
+    #      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -56,6 +56,20 @@ services:
       MP_DATA_FILE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - blog-nw
+  nginx:
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/staticfiles
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
     networks:
       - blog-nw
 
