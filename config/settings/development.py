@@ -13,12 +13,16 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET,
 )
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 SITE_NAME = env("SITE_NAME")
 DOMAIN = env("DOMAIN")
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+CELERY_FLOWER_USER = env("CELERY_FLOWER_USER")
+CELERY_FLOWER_PASSWORD = env("CELERY_FLOWER_PASSWORD")
 
 DATABASES = {
     "default": {

@@ -8,12 +8,13 @@ services:
     volumes:
       - .:/app:z
       - static_volume:/app/staticfiles
-    #    ports:
-    #      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - .env
     depends_on:
       - postgres
+      - redis
       - mailpit
     networks:
       - blog-nw
@@ -72,6 +73,21 @@ services:
       - "8080:80"
     networks:
       - blog-nw
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: redis
+    networks:
+      - blog-nw
+  celery_worker:
+    <<: *api
+    command: /start-celeryworker
+    container_name: celery_worker
+  flower:
+    <<: *api
+    command: /start-flower
+    ports:
+      - "5557:5555"
+    container_name: flower
 
 networks:
   blog-nw:
