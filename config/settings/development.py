@@ -11,6 +11,11 @@ cloudinary.config(
     api_secret=CLOUDINARY_API_SECRET,
 )
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",

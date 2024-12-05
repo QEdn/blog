@@ -1,0 +1,68 @@
+services:
+  api: &api
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    container_name: api
+    command: /start
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - mailpit
+    networks:
+      - blog-nw
+  postgres:
+    image: postgres:17-bullseye
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - blog-nw
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - blog-nw
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.15
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:
+      - mailpit_data:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - blog-nw
+
+networks:
+  blog-nw:
+    external: true
+volumes:
+  postgres_data:
+  static_volume:
+  mailpit_data:
